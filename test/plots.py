@@ -36,6 +36,6 @@ for producers, values in data.items():
     plt.grid(True)
 
     # Save the plot as a PNG file
-    individual_image_file = os.path.join(os.path.dirname(__file__), f"{producers}_producers.png")
+    individual_image_file = os.path.join(os.path.dirname(__file__), f"../img/{producers}_producers.png")
     plt.savefig(individual_image_file)
     plt.close()
