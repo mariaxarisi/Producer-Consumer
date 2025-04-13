@@ -10,8 +10,8 @@ make || { echo "Compilation failed. Exiting."; exit 1; }
 
 # Run the program for different values of PRODUCERS and CONSUMERS
 echo "Running the program with different PRODUCERS and CONSUMERS..."
-for PRODUCERS in 10 20 30 40; do
-    for CONSUMERS in $(seq 10 80); do
+for PRODUCERS in $(seq 1 5); do
+    for CONSUMERS in $(seq 1 10); do
         echo "Running ./bin/prod-con $PRODUCERS $CONSUMERS"
         ./bin/prod-con "$PRODUCERS" "$CONSUMERS" >> "$RESULT_FILE" 2>&1
     done
