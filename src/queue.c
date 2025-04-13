@@ -1,15 +1,5 @@
 #include "../include/queue.h"
 
-/*
-  typedef struct {
-  int buf[QUEUESIZE];
-  long head, tail;
-  int full, empty;
-  pthread_mutex_t *mut;
-  pthread_cond_t *notFull, *notEmpty;
-  } queue;
-*/
-
 queue *queueInit (void)
 {
   queue *q;
@@ -42,7 +32,7 @@ void queueDelete (queue *q)
   free (q);
 }
 
-void queueAdd (queue *q, int in)
+void queueAdd (queue *q, workFunction in)
 {
   q->buf[q->tail] = in;
   q->tail++;
@@ -58,7 +48,7 @@ void queueAdd (queue *q, int in)
   return;
 }
 
-void queueDel (queue *q, int *out)
+void queueDel (queue *q, workFunction *out)
 {
   *out = q->buf[q->head];
 

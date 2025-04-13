@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -pthread
+CFLAGS = -Wall -pthread -lm
 
 # Directories
 SRC_DIR = src
@@ -9,10 +9,10 @@ OBJ_DIR = obj
 BIN_DIR = bin
 
 # Source files
-SRCS = $(SRC_DIR)/main.c $(SRC_DIR)/queue.c $(SRC_DIR)/producer.c $(SRC_DIR)/consumer.c
+SRCS = $(SRC_DIR)/main.c $(SRC_DIR)/queue.c $(SRC_DIR)/producer.c $(SRC_DIR)/consumer.c $(SRC_DIR)/metrics.c
 
 # Object files
-OBJS = $(OBJ_DIR)/main.o $(OBJ_DIR)/queue.o $(OBJ_DIR)/producer.o $(OBJ_DIR)/consumer.o
+OBJS = $(OBJ_DIR)/main.o $(OBJ_DIR)/queue.o $(OBJ_DIR)/producer.o $(OBJ_DIR)/consumer.o $(OBJ_DIR)/metrics.o
 
 # Output binary
 TARGET = $(BIN_DIR)/prod-con
