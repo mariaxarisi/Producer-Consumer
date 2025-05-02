@@ -1,0 +1,119 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{titlesec}
+\usepackage{subcaption}
+
+\geometry{margin=1in}
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+
+\title{Producer-Consumer System Analysis}
+\author{Maria Charisi}
+\date{May 2025\\ 
+\href{https://github.com/mariaxarisi/Producer-Consumer}{\texttt{Github Repo}}}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This assignment evaluates the behavior of a multi-threaded system where $p$ producer threads enqueue function pointers of type \texttt{struct workFunction} into a shared FIFO queue, and $q$ consumer threads dequeue and execute them. Each function performs simple computations (e.g., evaluating the sine of ten angles). The system is assessed by measuring the average time between task insertion and retrieval from the queue, excluding execution time. Experiments were conducted across various consumer thread counts, to identify configurations that minimize waiting time.
+\end{abstract}
+
+\section{System Description}
+
+\subsection{Producer Threads}
+
+Each producer thread generates and enqueues 1,000 work functions into the shared FIFO queue. A \texttt{workFunction} struct contains:
+\begin{itemize}
+    \item a pointer to a function that computes the sine of ten predefined angles (in radians),
+    \item an argument containing an array of those ten angles,
+    \item and a timestamp marking the moment the task was pushed into the queue.
+\end{itemize}
+
+After all producer threads have completed their workload, the system inserts a number of \emph{poison pill} tasks into the queue - equal to the number of consumer threads - to signal consumers to terminate gracefully once all regular tasks have been processed.
+
+\subsection{Consumer Threads}
+
+Each consumer thread continuously dequeues tasks from the shared queue. Upon receiving a regular task, the consumer:
+\begin{itemize}
+    \item Records the task's waiting time by subtracting the enqueue timestamp from the current time.
+    \item Stores the waiting time in a global array for post-processing.
+    \item Executes the task's function on the provided argument.
+\end{itemize}
+
+If a poison pill is dequeued, the consumer thread terminates.
+
+\subsection{Post-Execution Analysis}
+
+Once all producer and consumer threads have completed execution, the program computes the average waiting time by aggregating values from the global array of recorded times. This metric is used to evaluate the performance of the system in different thread counts of consumers.
+
+
+\section{Results}
+
+The average waiting time for each producer–consumer combination was not derived from a single experiment. Instead, for every unique combination of producer and consumer thread counts, a batch of experiments was executed, and the reported waiting time represents the average across those runs. This approach was used to reduce variability and ensure statistically meaningful results.
+
+\subsection{Discussion of Results}
+
+As illustrated in Figure~\ref{fig:waitingtime}, the average task waiting time generally decreases as the number of consumer threads increases, for a fixed number of producer threads. This behavior is expected: when there are many producers and only a few consumers, the queue quickly fills with tasks. The limited number of consumers cannot process tasks as fast as they arrive, resulting in longer queue residence and thus higher average waiting times.
+
+In contrast, when the number of consumers exceeds the number of producers, more consumers remain idle. In such cases, newly enqueued tasks are often consumed almost immediately by waiting consumers, significantly reducing their time spent in the queue. This leads to lower average waiting times.
+
+However, it is important to note that excessive consumer threads may lead to diminishing returns or even minor performance penalties due to increased context switching and contention, especially on systems with a limited number of physical cores.
+
+\subsection{Hardware Specifications}
+
+The experiments were conducted on an Arch Linux guest system running in an Oracle VirtualBox virtual machine, with the following configuration:
+\begin{itemize}
+    \item Virtual Processor Allocation: 3 virtual CPUs
+    \item Host Processor: 12th Gen Intel(R) Core(TM) i7-1255U @ 2.60 GHz
+    \item Base Memory: 4 GB RAM
+    \item Virtualization: KVM Paravirtualization with Nested Paging
+\end{itemize}
+
+
+\begin{figure}[htbp]
+    \centering
+
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\linewidth]{img/1_producers.png}
+        \caption{1 Producer}
+        \label{fig:1a}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\linewidth]{img/2_producers.png}
+        \caption{2 Producers}
+        \label{fig:1b}
+    \end{subfigure}
+
+    \vspace{1em}
+
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\linewidth]{img/3_producers.png}
+        \caption{3 Producers}
+        \label{fig:1c}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\linewidth]{img/4_producers.png}
+        \caption{4 Producers}
+        \label{fig:1d}
+    \end{subfigure}
+
+    \vspace{1em}
+
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\linewidth]{img/5_producers.png}
+        \caption{5 Producers}
+        \label{fig:1e}
+    \end{subfigure}
+
+    \caption{Average waiting time versus consumer threads.}
+    \label{fig:waitingtime}
+\end{figure}
+
+\end{document}
