@@ -64,7 +64,8 @@ int main (int argc, char *argv[]){
 
   //printElapsedTimes();
   double avgTime = averageElapsedTime();
-  printf("Producers: %d, Consumers: %d, Average Time: %f sec\n", PRODUCERS, CONSUMERS, avgTime);
+  //printf("Producers: %d, Consumers: %d, Average Time: %f sec\n", PRODUCERS, CONSUMERS, avgTime);
+  printf("%f\n", avgTime);
 
   return 0;
 }
